@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Entity
 @Data
 @ToString
-public class MonthlyExpense {
+public class Expense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
