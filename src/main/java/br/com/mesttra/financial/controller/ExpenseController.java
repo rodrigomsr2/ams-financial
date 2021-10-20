@@ -1,9 +1,12 @@
 package br.com.mesttra.financial.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +15,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.mesttra.financial.entity.Expense;
 import br.com.mesttra.financial.service.ExpenseService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/expenses")
@@ -49,8 +56,19 @@ public class ExpenseController {
 	}
 	
 	@PostMapping
-	public void contractPlayer(@RequestBody Expense expense) {
-		this.expenseService.cadastrar(expense);
+	@ResponseStatus(HttpStatus.CREATED)
+	@ApiOperation(value = "Add contract player",
+			notes="Add player contract expenses")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Expenses added"),
+			@ApiResponse(code = 500, message = "Internal Error")
+	})
+	public ResponseEntity<Expense> contractPlayer(@RequestBody Expense newExpense) throws URISyntaxException {
+		Expense expense = this.expenseService.cadastrar(newExpense);
+		
+		URI uri = new URI("/expenses/" + expense.getId());
+		
+		return ResponseEntity.created(uri).body(expense);
 	}
 	
 	
